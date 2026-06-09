@@ -1179,7 +1179,8 @@ function _saveRemapState(){
     sessionStorage.setItem(REMAP_STATE_KEY, JSON.stringify({
       activeLoc:activeLoc, activeHolder:activeHolder, activeFilter:activeFilter,
       qbox: document.getElementById('qbox') ? document.getElementById('qbox').value : '',
-      sf: document.getElementById('sf') ? document.getElementById('sf').value : ''
+      sf: document.getElementById('sf') ? document.getElementById('sf').value : '',
+      scroll: document.getElementById('content') ? document.getElementById('content').scrollTop : 0
     }));
   }catch(e){}
 }
@@ -1771,6 +1772,14 @@ if(_cachedRemap && _cachedRemap.loc === activeLoc){
 
   applyFilters();
   checkUrlSku();
+
+  // Restore scroll position after rows are rendered (GAP-04)
+  if(_savedState && _savedState.scroll){
+    requestAnimationFrame(function(){
+      var _c = E('content');
+      if(_c) _c.scrollTop = _savedState.scroll;
+    });
+  }
 } else {
   // Fresh load — fetch from API
   loadData().then(function(){ checkUrlSku(); }).catch(function(){ checkUrlSku(); });
